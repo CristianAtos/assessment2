@@ -2,6 +2,7 @@
 exports.__esModule = true;
 exports.addCountry = exports.countriesData = void 0;
 var axios_1 = require("axios");
+var countrieslist = [];
 var countriesAPI = 'https://restcountries.com/v3.1/all';
 var Country = function (officialName, capital, region, language, population, flag) {
     return "<tr>\n        <td>".concat(officialName, "</td>\n        <td>").concat(capital, "</td>\n        <td>").concat(region, "</td>\n        <td>").concat(language, "</td>\n        <td>").concat(population, "</td>\n        <td> <img src=\"").concat(flag, "\" alt=\"Flag of ").concat(officialName, "\"></td>\n    </tr>");
@@ -24,10 +25,15 @@ exports.countriesData = {
                         population: country.population,
                         flag: country.flags.png
                     };
-                    (0, exports.addCountry)(column);
                     return column;
                 });
-                console.log(formatedCountries);
+                countrieslist = formatedCountries.sort(function (a, b) {
+                    return a.name.localeCompare(b.name);
+                });
+                for (var _i = 0, countrieslist_1 = countrieslist; _i < countrieslist_1.length; _i++) {
+                    var country = countrieslist_1[_i];
+                    (0, exports.addCountry)(country);
+                }
             });
         });
     }

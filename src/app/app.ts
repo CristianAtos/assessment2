@@ -1,4 +1,5 @@
 import axios from "axios";
+let countrieslist = []
 
 const countriesAPI = 'https://restcountries.com/v3.1/all'
 
@@ -31,10 +32,14 @@ export const countriesData = {
                         population: country.population,
                         flag : country.flags.png
                     }
-                    addCountry(column);
                     return column
                 });
-                console.log(formatedCountries)
+                countrieslist = formatedCountries.sort((a, b) =>{
+                    return a.name.localeCompare(b.name)
+                })
+                for(let country of countrieslist){
+                    addCountry(country)
+                }
             })
         })
     }
@@ -53,3 +58,4 @@ export const addCountry =  function (country){
         )
         cont!.appendChild(column)
     }
+
