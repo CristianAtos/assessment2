@@ -37,25 +37,32 @@ export const countriesData = {
                 countrieslist = formatedCountries.sort((a, b) =>{
                     return a.name.localeCompare(b.name)
                 })
-                for(let country of countrieslist){
-                    addCountry(country)
-                }
+                renderCountries(countrieslist)
             })
         })
     }
 }
 
-export const addCountry =  function (country){
+export const renderCountries =  function (countries){
         const cont = document.getElementById('countries-container-body')
-        let column = document.createElement('tr')
-        column.innerHTML= Country(
-            country.name,
-            country.capital,
-            country.region,
-            country.languages,
-            country.population,
-            country.flag
-        )
-        cont!.appendChild(column)
-    }
+        let nodes:HTMLTableRowElement[] = []
+        for(let country of countries){
+            let column = document.createElement('tr')
+            column.innerHTML= Country(
+                country.name,
+                country.capital,
+                country.region,
+                country.languages,
+                country.population,
+                country.flag
+                )
+                nodes.push(column)
+        }
+        cont!.replaceChildren(...nodes)
+}
+
+const button = document.getElementById('btn');
+button?.addEventListener('change', (e)=>{
+    renderCountries(countrieslist.reverse())
+})
 

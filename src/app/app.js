@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.addCountry = exports.countriesData = void 0;
+exports.renderCountries = exports.countriesData = void 0;
 var axios_1 = require("axios");
 var countrieslist = [];
 var countriesAPI = 'https://restcountries.com/v3.1/all';
@@ -30,18 +30,25 @@ exports.countriesData = {
                 countrieslist = formatedCountries.sort(function (a, b) {
                     return a.name.localeCompare(b.name);
                 });
-                for (var _i = 0, countrieslist_1 = countrieslist; _i < countrieslist_1.length; _i++) {
-                    var country = countrieslist_1[_i];
-                    (0, exports.addCountry)(country);
-                }
+                (0, exports.renderCountries)(countrieslist);
             });
         });
     }
 };
-var addCountry = function (country) {
+var renderCountries = function (countries) {
+    var _a;
     var cont = document.getElementById('countries-container-body');
-    var column = document.createElement('tr');
-    column.innerHTML = Country(country.name, country.capital, country.region, country.languages, country.population, country.flag);
-    cont.appendChild(column);
+    var nodes = [];
+    for (var _i = 0, countries_1 = countries; _i < countries_1.length; _i++) {
+        var country = countries_1[_i];
+        var column = document.createElement('tr');
+        column.innerHTML = Country(country.name, country.capital, country.region, country.languages, country.population, country.flag);
+        nodes.push(column);
+    }
+    (_a = cont).replaceChildren.apply(_a, nodes);
 };
-exports.addCountry = addCountry;
+exports.renderCountries = renderCountries;
+var button = document.getElementById('btn');
+button === null || button === void 0 ? void 0 : button.addEventListener('change', function (e) {
+    (0, exports.renderCountries)(countrieslist.reverse());
+});
