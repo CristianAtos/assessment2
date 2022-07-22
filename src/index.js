@@ -1,3 +1,8 @@
-import { jokes } from '../src/app/app.js';
+import { countriesData } from '../src/app/app.js';
+import "./main.scss"
 
-console.log(jokes.getCountries())
+console.log(countriesData.getCountries())
+
+
+
+
