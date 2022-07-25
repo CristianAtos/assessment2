@@ -1,7 +1,16 @@
 import axios from "axios";
-let countrieslist = []
+import { modal  as  TingleModal}from "tingle.js";
 
-const countriesAPI = 'https://restcountries.com/v3.1/all'
+const modal = new TingleModal();
+let countrieslist = []
+// const pageSize = 50;
+// let curPage = 1;
+
+const countriesAPI = 'https://restcountries.com/v3.1/'
+const wikiAPI = `https://en.wikipedia.org/api/rest_v1/page/summary/`
+
+
+
 
 const Country = (officialName:string, capital:string, region:string, language:string, population:number, flag:string) => {
     return `<tr>
@@ -15,11 +24,9 @@ const Country = (officialName:string, capital:string, region:string, language:st
 } 
 
 export const countriesData = {
-    getCountries: function () {
-        return new Promise((resolve, reject) =>{
-            axios.get(countriesAPI)
-            .then(res => {
-                resolve(res.data)           
+    getCountries: function (){
+            axios.get(countriesAPI + "all")
+            .then(res => {       
                 const countries = res.data
                 const formatedCountries = countries.map((country) => {
                     const languagesObject: string | object = country.languages
@@ -38,10 +45,11 @@ export const countriesData = {
                     return a.name.localeCompare(b.name)
                 })
                 renderCountries(countrieslist)
+                addModal()
             })
-        })
+        }
     }
-}
+
 
 export const renderCountries =  function (countries){
         const cont = document.getElementById('countries-container-body')
@@ -66,3 +74,14 @@ button?.addEventListener('change', (e)=>{
     renderCountries(countrieslist.reverse())
 })
 
+
+const addModal = function(){
+    const tableRows = document.querySelectorAll('tr')
+    tableRows.forEach(element => {
+        element.addEventListener('click', (e)=>{
+            modal.setContent('<h1>Hello</h1>')
+            modal.open()
+        })
+    });
+}
+    

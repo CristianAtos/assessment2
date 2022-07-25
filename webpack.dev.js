@@ -23,7 +23,7 @@ module.exports = merge(common, {
                 "style-loader", //3rd Extract css into files
                 "css-loader",  //2nd Turn css into commonjs
                 "sass-loader" //1st Turn sass into css
-            ] 
+            ]
             }
         ]
         }

@@ -2,36 +2,39 @@
 exports.__esModule = true;
 exports.renderCountries = exports.countriesData = void 0;
 var axios_1 = require("axios");
+var tingle_js_1 = require("tingle.js");
+var modal = new tingle_js_1.modal();
 var countrieslist = [];
-var countriesAPI = 'https://restcountries.com/v3.1/all';
+// const pageSize = 50;
+// let curPage = 1;
+var countriesAPI = 'https://restcountries.com/v3.1/';
+var wikiAPI = "https://en.wikipedia.org/api/rest_v1/page/summary/";
 var Country = function (officialName, capital, region, language, population, flag) {
     return "<tr>\n        <td>".concat(officialName, "</td>\n        <td>").concat(capital, "</td>\n        <td>").concat(region, "</td>\n        <td>").concat(language, "</td>\n        <td>").concat(population, "</td>\n        <td> <img src=\"").concat(flag, "\" alt=\"Flag of ").concat(officialName, "\"></td>\n    </tr>");
 };
 exports.countriesData = {
     getCountries: function () {
-        return new Promise(function (resolve, reject) {
-            axios_1["default"].get(countriesAPI)
-                .then(function (res) {
-                resolve(res.data);
-                var countries = res.data;
-                var formatedCountries = countries.map(function (country) {
-                    var languagesObject = country.languages;
-                    var languages = languagesObject ? (Object.values(languagesObject).join(', ')) : "No language to display";
-                    var column = {
-                        name: country.name.official,
-                        capital: country.capital,
-                        region: country.region,
-                        languages: languages,
-                        population: country.population,
-                        flag: country.flags.png
-                    };
-                    return column;
-                });
-                countrieslist = formatedCountries.sort(function (a, b) {
-                    return a.name.localeCompare(b.name);
-                });
-                (0, exports.renderCountries)(countrieslist);
+        axios_1["default"].get(countriesAPI + "all")
+            .then(function (res) {
+            var countries = res.data;
+            var formatedCountries = countries.map(function (country) {
+                var languagesObject = country.languages;
+                var languages = languagesObject ? (Object.values(languagesObject).join(', ')) : "No language to display";
+                var column = {
+                    name: country.name.official,
+                    capital: country.capital,
+                    region: country.region,
+                    languages: languages,
+                    population: country.population,
+                    flag: country.flags.png
+                };
+                return column;
             });
+            countrieslist = formatedCountries.sort(function (a, b) {
+                return a.name.localeCompare(b.name);
+            });
+            (0, exports.renderCountries)(countrieslist);
+            addModal();
         });
     }
 };
@@ -52,3 +55,12 @@ var button = document.getElementById('btn');
 button === null || button === void 0 ? void 0 : button.addEventListener('change', function (e) {
     (0, exports.renderCountries)(countrieslist.reverse());
 });
+var addModal = function () {
+    var tableRows = document.querySelectorAll('tr');
+    tableRows.forEach(function (element) {
+        element.addEventListener('click', function (e) {
+            modal.setContent('<h1>Hello</h1>');
+            modal.open();
+        });
+    });
+};
