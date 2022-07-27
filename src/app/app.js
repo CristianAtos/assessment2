@@ -1,43 +1,92 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 exports.__esModule = true;
-exports.renderCountries = exports.countriesData = void 0;
+exports.renderCountries = exports.countriesData = exports.paginate = void 0;
 var axios_1 = require("axios");
 var tingle_js_1 = require("tingle.js");
 var modal = new tingle_js_1.modal();
 var countrieslist = [];
-// const pageSize = 50;
-// let curPage = 1;
+var paginate = function (items, page, perPage) {
+    if (page === void 0) { page = 1; }
+    if (perPage === void 0) { perPage = 50; }
+    var offset = perPage * (page - 1);
+    var totalPages = Math.ceil(items.length / perPage);
+    var paginatedItems = items.slice(offset, perPage * page);
+    return {
+        previousPage: page - 1 ? page - 1 : null,
+        nextPage: (totalPages > page) ? page + 1 : null,
+        total: items.length,
+        totalPages: totalPages,
+        items: paginatedItems
+    };
+};
+exports.paginate = paginate;
 var countriesAPI = 'https://restcountries.com/v3.1/';
 var wikiAPI = "https://en.wikipedia.org/api/rest_v1/page/summary/";
 var Country = function (officialName, capital, region, language, population, flag) {
-    return "<tr>\n        <td>".concat(officialName, "</td>\n        <td>").concat(capital, "</td>\n        <td>").concat(region, "</td>\n        <td>").concat(language, "</td>\n        <td>").concat(population, "</td>\n        <td> <img src=\"").concat(flag, "\" alt=\"Flag of ").concat(officialName, "\"></td>\n    </tr>");
+    var id = officialName.replace(/ /g, '_').toLowerCase();
+    return "<tr>\n        <td id=\"".concat(officialName, "\">").concat(officialName, "</td>\n        <td>").concat(capital, "</td>\n        <td>").concat(region, "</td>\n        <td>").concat(language, "</td>\n        <td>").concat(population, "</td>\n        <td> <img src=\"").concat(flag, "\" alt=\"Flag of ").concat(officialName, "\"></td>\n    </tr>");
 };
-exports.countriesData = {
-    getCountries: function () {
-        axios_1["default"].get(countriesAPI + "all")
-            .then(function (res) {
-            var countries = res.data;
-            var formatedCountries = countries.map(function (country) {
-                var languagesObject = country.languages;
-                var languages = languagesObject ? (Object.values(languagesObject).join(', ')) : "No language to display";
-                var column = {
-                    name: country.name.official,
-                    capital: country.capital,
-                    region: country.region,
-                    languages: languages,
-                    population: country.population,
-                    flag: country.flags.png
-                };
-                return column;
-            });
-            countrieslist = formatedCountries.sort(function (a, b) {
-                return a.name.localeCompare(b.name);
-            });
-            (0, exports.renderCountries)(countrieslist);
-            addModal();
+var countriesData = function () {
+    axios_1["default"].get(countriesAPI + "all")
+        .then(function (res) {
+        var countries = res.data;
+        var formatedCountries = countries.map(function (country) {
+            var languagesObject = country.languages;
+            var languages = languagesObject ? (Object.values(languagesObject).join(', ')) : "No language to display";
+            var column = {
+                name: country.name.official,
+                capital: country.capital,
+                region: country.region,
+                languages: languages,
+                population: country.population,
+                flag: country.flags.png
+            };
+            return column;
         });
-    }
+        countrieslist = formatedCountries.sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+        });
+        (0, exports.renderCountries)(countrieslist);
+        addModal();
+    });
 };
+exports.countriesData = countriesData;
 var renderCountries = function (countries) {
     var _a;
     var cont = document.getElementById('countries-container-body');
@@ -45,7 +94,7 @@ var renderCountries = function (countries) {
     for (var _i = 0, countries_1 = countries; _i < countries_1.length; _i++) {
         var country = countries_1[_i];
         var column = document.createElement('tr');
-        column.innerHTML = Country(country.name, country.capital, country.region, country.languages, country.population, country.flag);
+        column.innerHTML = Country(country.name, country.capital ? country.capital : "No capital", country.region, country.languages, country.population, country.flag);
         nodes.push(column);
     }
     (_a = cont).replaceChildren.apply(_a, nodes);
@@ -56,11 +105,24 @@ button === null || button === void 0 ? void 0 : button.addEventListener('change'
     (0, exports.renderCountries)(countrieslist.reverse());
 });
 var addModal = function () {
+    var _this = this;
     var tableRows = document.querySelectorAll('tr');
     tableRows.forEach(function (element) {
-        element.addEventListener('click', function (e) {
-            modal.setContent('<h1>Hello</h1>');
-            modal.open();
-        });
+        element.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+            var res, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetch("".concat(wikiAPI, "brasil"))];
+                    case 1:
+                        res = _a.sent();
+                        return [4 /*yield*/, res.json()];
+                    case 2:
+                        data = _a.sent();
+                        modal.setContent(data.extract_html);
+                        modal.open();
+                        return [2 /*return*/];
+                }
+            });
+        }); });
     });
 };

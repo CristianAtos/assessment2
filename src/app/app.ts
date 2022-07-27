@@ -3,18 +3,30 @@ import { modal  as  TingleModal}from "tingle.js";
 
 const modal = new TingleModal();
 let countrieslist = []
-// const pageSize = 50;
-// let curPage = 1;
+
+export const paginate = (items, page = 1, perPage = 50) => {
+    const offset = perPage * (page - 1);
+    const totalPages = Math.ceil(items.length / perPage);
+    const paginatedItems = items.slice(offset, perPage * page);
+  
+    return {
+        previousPage: page - 1 ? page - 1 : null,
+        nextPage: (totalPages > page) ? page + 1 : null,
+        total: items.length,
+        totalPages: totalPages,
+        items: paginatedItems
+    };
+};
+
 
 const countriesAPI = 'https://restcountries.com/v3.1/'
 const wikiAPI = `https://en.wikipedia.org/api/rest_v1/page/summary/`
 
 
-
-
 const Country = (officialName:string, capital:string, region:string, language:string, population:number, flag:string) => {
+    const id = officialName.replace(/ /g, '_').toLowerCase();
     return `<tr>
-        <td>${officialName}</td>
+        <td id="${officialName}">${officialName}</td>
         <td>${capital}</td>
         <td>${region}</td>
         <td>${language}</td>
@@ -23,8 +35,7 @@ const Country = (officialName:string, capital:string, region:string, language:st
     </tr>`
 } 
 
-export const countriesData = {
-    getCountries: function (){
+export const countriesData = function (){
             axios.get(countriesAPI + "all")
             .then(res => {       
                 const countries = res.data
@@ -48,7 +59,7 @@ export const countriesData = {
                 addModal()
             })
         }
-    }
+    
 
 
 export const renderCountries =  function (countries){
@@ -58,7 +69,7 @@ export const renderCountries =  function (countries){
             let column = document.createElement('tr')
             column.innerHTML= Country(
                 country.name,
-                country.capital,
+                country.capital ? country.capital : "No capital",
                 country.region,
                 country.languages,
                 country.population,
@@ -75,11 +86,16 @@ button?.addEventListener('change', (e)=>{
 })
 
 
+
 const addModal = function(){
-    const tableRows = document.querySelectorAll('tr')
+    const tableRows = document.querySelectorAll('tr');
     tableRows.forEach(element => {
-        element.addEventListener('click', (e)=>{
-            modal.setContent('<h1>Hello</h1>')
+        element.addEventListener('click', async (e) =>{
+            // console.log(element)
+            // const name = document.getElementById(eleme)
+            const res = await fetch(`${wikiAPI}brasil` )
+            const data = await res.json()
+            modal.setContent(data.extract_html)
             modal.open()
         })
     });
