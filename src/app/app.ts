@@ -4,27 +4,13 @@ import { modal  as  TingleModal}from "tingle.js";
 const modal = new TingleModal();
 let countrieslist = []
 
-export const paginate = (items, page = 1, perPage = 50) => {
-    const offset = perPage * (page - 1);
-    const totalPages = Math.ceil(items.length / perPage);
-    const paginatedItems = items.slice(offset, perPage * page);
-  
-    return {
-        previousPage: page - 1 ? page - 1 : null,
-        nextPage: (totalPages > page) ? page + 1 : null,
-        total: items.length,
-        totalPages: totalPages,
-        items: paginatedItems
-    };
-};
-
 
 const countriesAPI = 'https://restcountries.com/v3.1/'
 const wikiAPI = `https://en.wikipedia.org/api/rest_v1/page/summary/`
 
 
 const Country = (officialName:string, capital:string, region:string, language:string, population:number, flag:string) => {
-    const id = officialName.replace(/ /g, '_').toLowerCase();
+    // const id = officialName.replace(/ /g, '_').toLowerCase();
     return `<tr>
         <td id="${officialName}">${officialName}</td>
         <td>${capital}</td>
@@ -91,9 +77,9 @@ const addModal = function(){
     const tableRows = document.querySelectorAll('tr');
     tableRows.forEach(element => {
         element.addEventListener('click', async (e) =>{
-            // console.log(element)
-            // const name = document.getElementById(eleme)
-            const res = await fetch(`${wikiAPI}brasil` )
+            const name :string = element.children[0].innerHTML
+            const countryName = name.replace(/ /g, '_').toLowerCase();
+            const res = await fetch(`${wikiAPI}${countryName}`)
             const data = await res.json()
             modal.setContent(data.extract_html)
             modal.open()

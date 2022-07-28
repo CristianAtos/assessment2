@@ -36,30 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.renderCountries = exports.countriesData = exports.paginate = void 0;
+exports.renderCountries = exports.countriesData = void 0;
 var axios_1 = require("axios");
 var tingle_js_1 = require("tingle.js");
 var modal = new tingle_js_1.modal();
 var countrieslist = [];
-var paginate = function (items, page, perPage) {
-    if (page === void 0) { page = 1; }
-    if (perPage === void 0) { perPage = 50; }
-    var offset = perPage * (page - 1);
-    var totalPages = Math.ceil(items.length / perPage);
-    var paginatedItems = items.slice(offset, perPage * page);
-    return {
-        previousPage: page - 1 ? page - 1 : null,
-        nextPage: (totalPages > page) ? page + 1 : null,
-        total: items.length,
-        totalPages: totalPages,
-        items: paginatedItems
-    };
-};
-exports.paginate = paginate;
 var countriesAPI = 'https://restcountries.com/v3.1/';
 var wikiAPI = "https://en.wikipedia.org/api/rest_v1/page/summary/";
 var Country = function (officialName, capital, region, language, population, flag) {
-    var id = officialName.replace(/ /g, '_').toLowerCase();
+    // const id = officialName.replace(/ /g, '_').toLowerCase();
     return "<tr>\n        <td id=\"".concat(officialName, "\">").concat(officialName, "</td>\n        <td>").concat(capital, "</td>\n        <td>").concat(region, "</td>\n        <td>").concat(language, "</td>\n        <td>").concat(population, "</td>\n        <td> <img src=\"").concat(flag, "\" alt=\"Flag of ").concat(officialName, "\"></td>\n    </tr>");
 };
 var countriesData = function () {
@@ -109,10 +94,13 @@ var addModal = function () {
     var tableRows = document.querySelectorAll('tr');
     tableRows.forEach(function (element) {
         element.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var res, data;
+            var name, countryName, res, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("".concat(wikiAPI, "brasil"))];
+                    case 0:
+                        name = element.children[0].innerHTML;
+                        countryName = name.replace(/ /g, '_').toLowerCase();
+                        return [4 /*yield*/, fetch("".concat(wikiAPI).concat(countryName))];
                     case 1:
                         res = _a.sent();
                         return [4 /*yield*/, res.json()];
